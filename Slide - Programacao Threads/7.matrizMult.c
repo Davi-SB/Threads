@@ -7,27 +7,23 @@
 #define COLUNAS 3
 
 
-int matriz1[3][3] = { {1, 2,5}, {3, 4,2}, {5, 6,1} };
-int matriz2[3][3] = {{1, 2,5}, {3, 4,2},  {5, 6,1} };
+int matriz1[3][3] = { {1, 2, 5}, {3, 4, 2}, {5, 6, 1} };
+int matriz2[3][3] = {{1, 2, 5}, {3, 4, 2},  {5, 6, 1} };
 int resultado[3][3];
   
 
 void *threadCode(void *tid){   
-	
 	int i,j, k;
-  int  threadId = (*(int *)tid); 
+	int  threadId = (*(int *)tid); 
 	
-	   for(i=threadId; i < LINHAS; i = i + NUM_THREADS) {
-	   	      	
-      			for (j=0;j<COLUNAS;j++) {
-		        	 resultado[i][j] = 0;
-  
-       				 for(k=0;k< COLUNAS;k++) {
-           		 		resultado[i][j] = resultado[i][j] + matriz1[i][k]* matriz2[k][j];
-       		 		}
-      			}			
-       
-    	}
+	for(i=threadId; i < LINHAS; i = i + NUM_THREADS) {		
+		for (j=0;j<COLUNAS;j++) {
+			resultado[i][j] = 0;
+
+			for(k=0;k< COLUNAS;k++) resultado[i][j] += (matriz1[i][k] * matriz2[k][j]);
+		}			
+
+	}
   
 }
 
@@ -48,9 +44,9 @@ int main (int argc, char *argv[]){
   }   
   
   for(i=0; i < LINHAS; i++) {
-			 for (j=0;j<COLUNAS;j++) {
+		for (j=0;j<COLUNAS;j++) {
       		 printf("%d\t", resultado[i][j]);
-  		 }
+  		}
   		 
   		 printf("\n");
    }

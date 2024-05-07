@@ -6,14 +6,14 @@
 
 void *PrintHello(void *threadid){   
   int *tid = (int *)threadid; 
-  char *ret = (char *)malloc(100);
+  char *ret = (char *) malloc(100);
   sprintf(ret, "Ola, mundo! Sou eu, a thread %d", *tid);
   pthread_exit((void *) tid);
 }
 
 int main (int argc, char *argv[]){   
   pthread_t threads[NUM_THREADS]; int *taskids[NUM_THREADS];
-   int rc; int t; int u;   
+  int rc; int t; int u;   
   for(t=0; t<NUM_THREADS; t++){
     printf("No main: criando thread %d\n", t);    
     taskids[t] = (int *) malloc(sizeof(int)); *taskids[t] = t;
