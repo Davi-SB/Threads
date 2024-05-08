@@ -1,5 +1,7 @@
 // perguntar se pode ser feito assim sem alocacao dinamica
 // perguntar motivo do comportamento inesperado (wpp de IS)
+// taskIDs precisa mesmo existir? nao poderia ser t?
+// eh necessario sempre checar o valor de rc?
 
 #include <pthread.h>
 #include <stdio.h>
@@ -20,7 +22,7 @@ int main() {
         taskIDs[t] = t;
         
         printf("Na main: criando thread %d\n", taskIDs[t]);
-		int rc = pthread_create(&threads[t], NULL, PrintHello, (void *)&(taskIDs[t])); // ultimo argumento eh o passado para a thread. (void *) eh o tipo esperado. adiciona-se o &. (void *)&t tambem funcionaria
+		    int rc = pthread_create(&threads[t], NULL, PrintHello, (void *)&(taskIDs[t])); // ultimo argumento eh o passado para a thread. (void *) eh o tipo esperado. adiciona-se o &. (void *)&t tambem funcionaria
         if (rc) { printf("ERRO; código de retorno é %d\n", rc); exit(-1); }
     }
     pthread_exit(NULL);
