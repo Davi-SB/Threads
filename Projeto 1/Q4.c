@@ -27,10 +27,8 @@ void *validRow(void *arguments) {
     invalidCount++;
     pthread_mutex_unlock(&Mutex);
     pthread_exit(NULL);
-    return NULL;
   }
   pthread_exit(NULL);
-  return NULL;
 }
 
 void *validCollumn(void *arguments) {
@@ -47,10 +45,8 @@ void *validCollumn(void *arguments) {
     invalidCount++;
     pthread_mutex_unlock(&Mutex);
     pthread_exit(NULL);    
-    return NULL;
   }
   pthread_exit(NULL);    
-  return NULL;
 }
 
 void *validSquare(void *arguments) {
@@ -68,11 +64,9 @@ void *validSquare(void *arguments) {
       invalidCount++;
       pthread_mutex_unlock(&Mutex);
       pthread_exit(NULL);
-      return NULL;
     }
   }
   pthread_exit(NULL);
-  return NULL;
 }
 
 int main() {
