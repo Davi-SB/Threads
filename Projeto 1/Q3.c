@@ -2,93 +2,159 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define NUM_CLIENTES 5
-#define NUM_OPS 20
 
-typedef struct conta{
-  int id_cliente, saldo;
-} Conta;
-
-pthread_mutex_t mutex_banco = PTHREAD_MUTEX_INITIALIZER;
-Conta *contas[NUM_CLIENTES];
+#define NUM_CLIENTES 3
+#define NUM_OPS 5 //Número de operações por cliente
 
 typedef struct escolhas{
-  int op, id_conta;
+    int idConta, idCliente;
+    int op;
+    int valorOP;
 } Escolha;
 
-void *saldo(void *thread_id){
-  int tid = *((int *)thread_id);
-  pthread_mutex_lock(&mutex_banco);
-  printf("Cliente %d possui %d de saldo\n", tid, contas[tid]->saldo);
-  pthread_mutex_unlock(&mutex_banco);
-  pthread_exit(NULL);
+typedef struct link {
+    Escolha escolha;
+    struct link *next;
+} Link;
+
+typedef struct queue{
+    Link *front;
+    Link *rear;
+    int size;
+} Queue;
+
+typedef struct thread_data {
+  int idConta, idCliente; // Diferentes clientes A e B podem compartilhar uma conta j
+  Queue *q;
+} Thread_data;
+
+Link* createHeader() {
+    Link *n = (Link *) malloc(sizeof(Link));
+    n->next = NULL;
+    return n;
 }
 
-void *deposito(void *thread_id){
-  int tid = *((int *)thread_id);
-  pthread_mutex_lock(&mutex_banco);
-  srand(time(NULL));
-  int valor_deposito = rand() % 400; //valor aleatorio para deposito, poderia ser um scanf para o cliente digitar um valor
-  contas[tid]->saldo += valor_deposito;
-  printf("Cliente %d depositou %d Saldo C%d: %d\n", tid, valor_deposito, tid, contas[tid]->saldo);
-  pthread_mutex_unlock(&mutex_banco);
-  pthread_exit(NULL);
+Link* createLink(Escolha escolha0) {
+    Link *n = (Link *) malloc(sizeof(Link));
+    n->escolha.idCliente = escolha0.idCliente;
+    n->escolha.idConta   = escolha0.idConta;
+    n->escolha.op        = escolha0.op;
+    n->escolha.valorOP   = escolha0.valorOP;
+    n->next = NULL;
+    return n;
 }
 
-void *saque(void *thread_id){
-  int tid = *((int *)thread_id);
-  pthread_mutex_lock(&mutex_banco);
-  srand(time(NULL));
-  int valor_saque = rand() % 400; //valor aleatorio para saque, poderia ser um scanf para o cliente digitar um valor
-  contas[tid]->saldo -= valor_saque;
-  printf("Cliente %d sacou %d Saldo C%d: %d\n", tid, valor_saque, tid, contas[tid]->saldo);
-  pthread_mutex_unlock(&mutex_banco);
-  pthread_exit(NULL);
+Queue *createQueue() {
+    Queue *q = (Queue *) malloc(sizeof(Queue));
+    q->front = q->rear = createHeader(); // header Link
+    q->size = 0;
+    return q;
 }
 
-void *bancos(){
-  pthread_t clientes[NUM_CLIENTES];
-  Escolha operacoes[NUM_OPS];
+void enqueue(Queue *q, Escolha escolha0) { // "append"
+    q->rear->next = createLink(escolha0);
+    q->rear = q->rear->next;
+    q->size++;
+}
 
-  for(int i = 0; i < NUM_CLIENTES; i++){
-    contas[i] = (Conta *) malloc (sizeof(Conta));
-    contas[i]->id_cliente = i;
-    contas[i]->saldo = 0;
-  }
+Escolha dequeue(Queue *q) { // remove o primeiro, q->front->Pnext
+    if(q->size == 0) { printf("Cuidado!!! fila vazia\n"); exit(-1); }
+    Escolha it = (q->front)->next->escolha;
+    
+    Link *temp = (q->front)->next; // (q->front) eh o header Link
+    (q->front)->next = (q->front)->next->next;
+    free(temp);
+    
+    if((q->front)->next == NULL) q->rear = q->front; // empty queue
+    q->size--;
+    return it;
+}
 
-  for (int i = 0; i < NUM_OPS; i++) {
-    operacoes[i].op = rand() % 3;
-    operacoes[i].id_conta = rand() % NUM_CLIENTES;
-  
-    switch(operacoes[i].op){
-      case(0):
-        pthread_create(&clientes[operacoes[i].id_conta], NULL, saldo, &operacoes[i].id_conta);
-        break;
-      
-      case(1):
-        pthread_create(&clientes[operacoes[i].id_conta], NULL, deposito, &operacoes[i].id_conta);
-        break;
+int queueEmpty(Queue *q) {
+  return (q->size == 0);
+}
 
-      case(2):
-        pthread_create(&clientes[operacoes[i].id_conta], NULL, saque, &operacoes[i].id_conta);
-        break;
+void deleteQueue(Queue* q) { // libera memoria alocada para a lista e os Links
+    while (q->size > 0) {
+        Link *temp = q->front; // temp recece a front inicial/atual
+        q->front = q->front->next; // front passa a apontar para o proximo
+        free(temp);
     }
-  }
+    free(q); // q eh um ponteiro que foi alocado com malloc
+}
 
-  for (int i = 0; i < NUM_CLIENTES; i++) {
-    pthread_join(clientes[i], NULL);
-  }
+int saldoCliente[NUM_CLIENTES] = {};
+pthread_mutex_t mutex_queue    = PTHREAD_MUTEX_INITIALIZER; // mutex para realizar que o uso da fila seja usado de maneira segura e correta por diferentes threads
+pthread_cond_t  empty          = PTHREAD_COND_INITIALIZER;  // variavel de condicao para caso de fila vazia
 
-  for (int i = 0; i < NUM_CLIENTES; i++) {
-    free(contas[i]);
-  }
-  pthread_exit(NULL);
+void *bancoRotina(void* arg) {
+    Queue *q = (Queue *) arg;  
+    for (int i = 0; i < (NUM_CLIENTES*NUM_OPS); i++) {
+        pthread_mutex_lock(&mutex_queue);
+        while (queueEmpty(q)) pthread_cond_wait(&empty, &mutex_queue); // em caso de fila vazia, o banco nao pode realzar operacoes entao dorme na variavel empty
+        Escolha pedido = dequeue(q);
+        pthread_mutex_unlock(&mutex_queue);
+
+        switch (pedido.op) {
+            case 0: // consulta de saldo
+            printf("Cliente %d - Consulta de Saldo: %d\n", pedido.idCliente, saldoCliente[pedido.idConta]);
+            break;
+
+            case 1: // deposito
+            saldoCliente[pedido.idConta] += pedido.valorOP;
+            printf("Cliente %d - Deposito de: %d\n", pedido.idCliente, pedido.valorOP);
+            break;
+
+            case 2: // saque
+            saldoCliente[pedido.idConta] -= pedido.valorOP;
+            printf("Cliente %d - Saque de: %d\n", pedido.idCliente, pedido.valorOP);
+            break;
+        }
+    }
+    pthread_exit(NULL);
+}
+
+void *clienteRotina(void *arg) {
+    Thread_data data = *((Thread_data*)arg);
+    Escolha escolha;
+    escolha.idCliente = data.idCliente;
+    escolha.idConta   = data.idConta;
+
+    for (int i = 0; i < NUM_OPS; i++) {
+        escolha.op = rand()%3;
+        if(escolha.op) escolha.valorOP = rand()%1000; // (escolha == deposito || escolha == saque)
+
+        pthread_mutex_lock(&mutex_queue);
+        enqueue(data.q, escolha);
+        pthread_cond_signal(&empty); // em caso da thread banco estar dormindo, envia um sinal para que ela possa voltar ao estado pronto
+        pthread_mutex_unlock(&mutex_queue);
+    }
+    pthread_exit(NULL);
 }
 
 int main(){
-  pthread_t banco;
-  pthread_create(&banco, NULL, bancos, NULL);
-  pthread_join(banco, NULL);
-  pthread_exit(NULL);
-  return 0;
+    srand(time(NULL));
+    pthread_t threadBanco, cliente[NUM_CLIENTES];
+    Queue *filaPedidos = createQueue();
+    Thread_data data[NUM_CLIENTES];
+
+    int rc = pthread_create(&threadBanco, NULL, bancoRotina, (void *)filaPedidos);
+    if(rc) { printf("error pthread_create: %d\n", rc); exit(-1); }
+
+    for (int i = 0; i < NUM_CLIENTES; i++) {
+        data[i].idCliente = i;
+        data[i].idConta   = (rand()%(i+1)); // faz com que diferentes clientes possam ter a mesma conta, uma conta em conjunto. Dessa forma, o cliente i pode ter ser dono da conta i, i-1, ... , 1 OU 0
+        data[i].q         = filaPedidos;
+
+        rc = pthread_create(&cliente[i], NULL, clienteRotina, (void *)&data[i]);
+        if(rc) { printf("error pthread_create: %d\n", rc); exit(-1); }
+        printf("\t\t\t\t\t\tCliente %d usa conta %d\n", data[i].idCliente, data[i].idConta); 
+    }
+
+    for(int i = 0; i < NUM_CLIENTES; i++) pthread_join(cliente[i], NULL); // espera todos os clientes terminarem de realizar suas operacoes para prosseguir com a execucao da thread main
+    pthread_join(threadBanco, NULL); // espera o banco termnar de processar as operacoes para prosseguir com a execucao da thread main
+    deleteQueue(filaPedidos);
+    for (int i = 0; i < NUM_CLIENTES; i++) printf("<conta %d: %d>  ", i, saldoCliente[i]);
+    printf("\n");
+    pthread_exit(NULL);
 }
