@@ -154,7 +154,7 @@ int main(){
     for(int i = 0; i < NUM_CLIENTES; i++) pthread_join(cliente[i], NULL); // espera todos os clientes terminarem de realizar suas operacoes para prosseguir com a execucao da thread main
     pthread_join(threadBanco, NULL); // espera o banco termnar de processar as operacoes para prosseguir com a execucao da thread main
     deleteQueue(filaPedidos);
-    for (int i = 0; i < NUM_CLIENTES; i++) printf("<conta %d: %d>  ", i, saldoCliente[i]);
-    printf("\n");
+    //for (int i = 0; i < NUM_CLIENTES; i++) printf("<conta %d: %d>  ", i, saldoCliente[i]); // informa o saldo final de cada conta para conferir o funcionamento, caso desejado
+    //printf("\n");
     pthread_exit(NULL);
 }
