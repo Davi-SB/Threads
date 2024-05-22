@@ -1,0 +1,22 @@
+    OK arquitetura x68
+    OK bootloader
+    OK chamadas ao sistema
+    OK contexto de processos
+    OK deadlock
+    OK desabilita��o de interrup��es
+    OK escalonamento
+    OK exclus�o m�tua
+    OK interrup��es
+    OK mutex
+camada software do s.o.
+barreira
+cpu
+estrutura monol�tica
+espa�o de enderessamento
+estrutura micron�cleo
+grafo de aloca��o de recursos
+modo usu�rio e n�cleo kernel
+processos
+software de e/s
+spin lock
+threads
