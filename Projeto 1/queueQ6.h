@@ -1,5 +1,7 @@
 #ifndef QUEUEQ6 
 #define QUEUEQ6
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct node {
 	void *(*func)(void *);
@@ -18,21 +20,22 @@ typedef struct thread_data {
   Queue *q;
 } Thread_data;
 
-Node *createNode(void *(*func)(void *) = NULL) {
+Node *createNode(void *(*func0)(void *)) {
 	Node *n = (Node *) malloc(sizeof(Node));
-	n->next = func;
+	n->func = func0;
+    n->next = NULL;
 	return n;
 }
 
 Queue *createQueue() {
     Queue *q = (Queue *) malloc(sizeof(Queue));
-    q->front = q->rear = createHeader(); // header Node
+    q->front = q->rear = createNode(NULL); // header Node
     q->size = 0;
     return q;
 }
 
-void enqueue(Queue *q, Escolha escolha0) { // "append"
-    q->rear->next = createNode(escolha0);
+void enqueue(Queue *q, void *(*func0)(void *)) { // "append"
+    q->rear->next = createNode(func0);
     q->rear = q->rear->next;
     q->size++;
 }
