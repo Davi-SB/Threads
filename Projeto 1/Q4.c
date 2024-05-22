@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#define THREADS 27
+#define THREADS 27 // 9 validRow, 9 validColumn e 9 validSquare
 
 int invalidCount = 0;
 pthread_mutex_t Mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -16,10 +16,10 @@ typedef struct thread_data {
 void *validRow(void *arguments) {
   Thread_data *data = arguments;
 
-    int mark[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    int i0 = data->start;
-    
-    for (int j = 0; j < 9; j++) {
+  int mark[9] = {};
+  int i0 = data->start;
+  
+  for (int j = 0; j < 9; j++) {
     mark[(data->board)[i0][j]-1]++;
     if (mark[(data->board)[i0][j]-1] == 1) continue;
     
@@ -27,16 +27,14 @@ void *validRow(void *arguments) {
     invalidCount++;
     pthread_mutex_unlock(&Mutex);
     pthread_exit(NULL);
-    return NULL;
   }
   pthread_exit(NULL);
-  return NULL;
 }
 
-void *validCollumn(void *arguments) {
+void *validColumn(void *arguments) {
   Thread_data *data = arguments;
 
-  int mark[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int mark[9] = {};
   int j0 = data->start;
   
   for (int i = 0; i < 9; i++) {
@@ -47,16 +45,14 @@ void *validCollumn(void *arguments) {
     invalidCount++;
     pthread_mutex_unlock(&Mutex);
     pthread_exit(NULL);    
-    return NULL;
   }
   pthread_exit(NULL);    
-  return NULL;
 }
 
 void *validSquare(void *arguments) {
   Thread_data *data = arguments;
 
-  int mark[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int mark[9] = {};
   int i0 = 3*((data->start)/3), j0 = 3*((data->start)%3);
  
   for (int i = 0; i < 3; i++) {
@@ -68,17 +64,15 @@ void *validSquare(void *arguments) {
       invalidCount++;
       pthread_mutex_unlock(&Mutex);
       pthread_exit(NULL);
-      return NULL;
     }
   }
   pthread_exit(NULL);
-  return NULL;
 }
 
 int main() {
   pthread_t myThread[THREADS]; // threads
   int ret, **board;            // retorno do thread_create e tabuleiro de sudoku
-  void *(*func)(void *);       // ponteiro pra função que valida cada thread
+  void *(*func)(void *);       // ponteiro pra funcao que valida cada thread
   
   board = (int **) malloc(9*sizeof(int *));
   for (int i = 0; i < 9; i++) {
@@ -91,7 +85,7 @@ int main() {
   func = validRow;
   for (int k = 0; k < THREADS; k++) {
     // if (k == 0) func = validRow;
-    if (k == 9)  func = validCollumn;
+    if (k == 9)  func = validColumn;
     if (k == 18) func = validSquare;
     
     Thread_data data = { board, k%9 };
