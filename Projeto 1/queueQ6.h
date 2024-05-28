@@ -3,28 +3,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef void *(*funcPtr)(void *);
+
 typedef struct node {
-	void *(*func)(void *);
-	Node *next;
+    funcPtr func;
+    Node *next;
 }Node;
 
 
 typedef struct queue{
-	Node *front;
-	Node *rear;
-	int size;
+    Node *front;
+    Node *rear;
+    int size;
 } Queue;
 
-typedef struct thread_data {
-  int idConta, idCliente; // Diferentes clientes A e B podem compartilhar uma conta j
-  Queue *q;
-} Thread_data;
-
-Node *createNode(void *(*func0)(void *)) {
-	Node *n = (Node *) malloc(sizeof(Node));
-	n->func = func0;
+Node *createNode(funcPtr func0) {
+    Node *n = (Node *) malloc(sizeof(Node));
+    n->func = func0;
     n->next = NULL;
-	return n;
+    return n;
 }
 
 Queue *createQueue() {
@@ -34,15 +31,15 @@ Queue *createQueue() {
     return q;
 }
 
-void enqueue(Queue *q, void *(*func0)(void *)) { // "append"
+void enqueue(Queue *q, funcPtr func0) { // "append"
     q->rear->next = createNode(func0);
     q->rear = q->rear->next;
     q->size++;
 }
 
-Escolha dequeue(Queue *q) { // remove o primeiro, q->front->Pnext
+funcPtr dequeue(Queue *q) { // remove o primeiro, q->front->Pnext
     if(q->size == 0) { printf("Cuidado!!! fila vazia\n"); exit(-1); }
-    Escolha it = (q->front)->next->escolha;
+    funcPtr it = (q->front)->next->func;
     
     Node *temp = (q->front)->next; // (q->front) eh o header Node
     (q->front)->next = (q->front)->next->next;
@@ -53,7 +50,7 @@ Escolha dequeue(Queue *q) { // remove o primeiro, q->front->Pnext
     return it;
 }
 
-int queueEmpty(Queue *q) {
+int empty(Queue *q) {
   return (q->size == 0);
 }
 
