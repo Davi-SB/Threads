@@ -7,8 +7,8 @@ typedef void *(*funcPtr)(void *);
 
 typedef struct node {
     funcPtr func;
-    Node *next;
-}Node;
+    struct node *next;
+} Node;
 
 
 typedef struct queue{
