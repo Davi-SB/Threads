@@ -68,7 +68,7 @@ void* escalonador(void* arg) {
         // enquanto puder ter mais threads rodando E threads (rotinas) prontas  
         while(nThreadsRodando < N && !empty(q)) {
             funcPtr rotina = dequeue(q);
-            rc = pthread_create(&MyThread[i], NULL, rotina, &IDS[i]);
+            rc = pthread_create(&MyThread[i], NULL, rotina, (void*) &IDS[i]);
             if(rc) { printf("error pthread_create: %d\n", rc); exit(-1); }
             else printf("Tarefa %d comecou a excecucao\n", i+1);
             
