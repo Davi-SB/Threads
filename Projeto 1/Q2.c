@@ -3,11 +3,9 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-
-// Declare global variables
 int arraySize;  // tamanho do array
 int numThread;  // quantidade de threads
-int *array;     // global array pointer
+int *array;
 pthread_barrier_t barrier; // Barreira para sincronização
 
 
@@ -15,14 +13,12 @@ void* bubbleSort(void* arg);
 void* merge(void* arg);
 
 
-int main()
+int main() 
 {
-  
-   printf("Por favor digite o numero de threads que dejesas utilizar\n");
+   printf("Por favor digite o numero de threads que dejesa utilizar\n");
    scanf("%d", &numThread);
    printf("Por favor digite o tamanho do array a ser montado\n");
    scanf("%d", &arraySize);
-  
   
    array = malloc(arraySize * sizeof(int));
    if (array == NULL)
@@ -36,37 +32,29 @@ int main()
        scanf("%d",&array[i]);
    }
 
-
-
-
    pthread_t threads[numThread + 1];
    int thread_ids[numThread];
 
-
-   // Initialize barrier
+   // Inicializa a barreira dinamicamente
    pthread_barrier_init(&barrier, NULL, numThread + 1);
 
-
-   // Create sorting threads
+   // Cria as threads de bubbleSort
    for (int i = 0; i < numThread; i++)
    {
        thread_ids[i] = i;
-       pthread_create(&threads[i], NULL, bubbleSort, &thread_ids[i]);
+       int rc = pthread_create(&threads[i], NULL, bubbleSort, &thread_ids[i]);
+       if(rc) { printf("error pthread_create: %d\n", rc); exit(-1); }
    }
 
-
-   // Create merging thread
+   // Cria a thread de merge
    pthread_create(&threads[numThread], NULL, merge, NULL);
 
-
-   // Wait for all threads to finish
+   // Espera todas as threads terminarem a execucao
    for (int i = 0; i <= numThread; i++)
    {
        pthread_join(threads[i], NULL);
    }
 
-
-   // Print sorted array
    printf("Array ordenado: ");
    for (int i = 0; i < arraySize; i++)
    {
@@ -74,22 +62,18 @@ int main()
    }
    printf("\n");
 
-
    pthread_barrier_destroy(&barrier);
    free(array);
    pthread_exit(NULL);
    return 0;
 }
 
-
 void* bubbleSort(void* arg)
 {
    int thread_id = *(int*)arg;
    int start = thread_id * (arraySize / numThread);
    int end = (thread_id + 1) * (arraySize / numThread);
-   if (thread_id == numThread - 1)
-       end = arraySize;
-
+   if (thread_id == numThread - 1) end = arraySize;
 
    for (int i = start; i < end - 1; i++)
    {
@@ -103,15 +87,16 @@ void* bubbleSort(void* arg)
            }
        }
    }
-   pthread_barrier_wait(&barrier); // Sincronizando todas as threads para que a thread final possa mesclar o resultado
+
+   // Sincronizando todas as threads para que a thread final possa mesclar o resultado
+   pthread_barrier_wait(&barrier);
    pthread_exit(NULL);
 }
 
-
 void* merge(void* arg)
 {
-   pthread_barrier_wait(&barrier); // a thread final entra na funcao mas ja é colocada rapidamente a espera das outras
-
+   // a thread final entra na funcao mas ja é colocada rapidamente a espera das outras
+   pthread_barrier_wait(&barrier);
 
    int array_aux[arraySize];
    for (int i = 0; i < arraySize; i++)
@@ -119,13 +104,9 @@ void* merge(void* arg)
        array_aux[i] = array[i];
    }
 
-
    int cont_array[numThread];
    int ponto_maximo[numThread];
-
-
    int ponto_de_quebra = arraySize / numThread;
-
 
    for (int i = 0; i < numThread; i++)
    {

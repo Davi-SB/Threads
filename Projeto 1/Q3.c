@@ -84,14 +84,24 @@ void deleteQueue(Queue* q) { // libera memoria alocada para a lista e os Links
 }
 
 int saldoCliente[NUM_CLIENTES] = {};
-pthread_mutex_t mutex_queue    = PTHREAD_MUTEX_INITIALIZER; // mutex para realizar que o uso da fila seja usado de maneira segura e correta por diferentes threads
-pthread_cond_t  empty          = PTHREAD_COND_INITIALIZER;  // variavel de condicao para caso de fila vazia
+
+// mutex para realizar que o uso da fila (recurso compartilhado) seja usado de maneira segura 
+// e correta por diferentes threads
+pthread_mutex_t mutex_queue = PTHREAD_MUTEX_INITIALIZER; 
+
+// variavel de condicao para caso de fila vazia
+pthread_cond_t  empty = PTHREAD_COND_INITIALIZER;  
 
 void *bancoRotina(void* arg) {
     Queue *q = (Queue *) arg;  
     for (int i = 0; i < (NUM_CLIENTES*NUM_OPS); i++) {
+        
+        // Trava o mutex visto que a fila eh um recurso compártilhado
         pthread_mutex_lock(&mutex_queue);
-        while (queueEmpty(q)) pthread_cond_wait(&empty, &mutex_queue); // em caso de fila vazia, o banco nao pode realzar operacoes entao dorme na variavel empty
+        
+        // em caso de fila vazia, o banco nao pode realzar operacoes entao dorme na variavel empty
+        while (queueEmpty(q)) pthread_cond_wait(&empty, &mutex_queue); 
+        
         Escolha pedido = dequeue(q);
         pthread_mutex_unlock(&mutex_queue);
 
@@ -126,7 +136,9 @@ void *clienteRotina(void *arg) {
 
         pthread_mutex_lock(&mutex_queue);
         enqueue(data.q, escolha);
-        pthread_cond_signal(&empty); // em caso da thread banco estar dormindo, envia um sinal para que ela possa voltar ao estado pronto
+        
+        // em caso da thread banco estar dormindo, envia um sinal para que ela possa voltar ao estado pronto
+        pthread_cond_signal(&empty); 
         pthread_mutex_unlock(&mutex_queue);
     }
     pthread_exit(NULL);
@@ -143,7 +155,10 @@ int main(){
 
     for (int i = 0; i < NUM_CLIENTES; i++) {
         data[i].idCliente = i;
-        data[i].idConta   = (rand()%(i+1)); // faz com que diferentes clientes possam ter a mesma conta, uma conta em conjunto. Dessa forma, o cliente i pode ter ser dono da conta i, i-1, ... , 1 OU 0
+        
+        // faz com que diferentes clientes possam ter a mesma conta, uma conta em conjunto. Dessa forma, 
+        // o cliente i pode ter ser dono da conta i, i-1, ... , 1 OU 0
+        data[i].idConta   = (rand()%(i+1));
         data[i].q         = filaPedidos;
 
         rc = pthread_create(&cliente[i], NULL, clienteRotina, (void *)&data[i]);
@@ -151,10 +166,12 @@ int main(){
         printf("\t\t\t\t\t\tCliente %d usa conta %d\n", data[i].idCliente, data[i].idConta); 
     }
 
-    for(int i = 0; i < NUM_CLIENTES; i++) pthread_join(cliente[i], NULL); // espera todos os clientes terminarem de realizar suas operacoes para prosseguir com a execucao da thread main
-    pthread_join(threadBanco, NULL); // espera o banco termnar de processar as operacoes para prosseguir com a execucao da thread main
+    // espera todos os clientes terminarem de realizar suas operacoes para prosseguir com a execucao 
+    // da thread main
+    for(int i = 0; i < NUM_CLIENTES; i++) pthread_join(cliente[i], NULL);
+
+    // espera o banco termnar de processar as operacoes para prosseguir com a execucao da thread main
+    pthread_join(threadBanco, NULL); 
     deleteQueue(filaPedidos);
-    //for (int i = 0; i < NUM_CLIENTES; i++) printf("<conta %d: %d>  ", i, saldoCliente[i]); // informa o saldo final de cada conta para conferir o funcionamento, caso desejado
-    //printf("\n");
     pthread_exit(NULL);
 }

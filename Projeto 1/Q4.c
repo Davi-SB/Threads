@@ -23,7 +23,7 @@ void *validRow(void *arguments) {
     mark[(data->board)[i0][j]-1]++;
     if (mark[(data->board)[i0][j]-1] == 1) continue;
     
-    pthread_mutex_lock(&Mutex);
+    pthread_mutex_lock(&Mutex); // invalidCount eh um recurso comparilhado
     invalidCount++;
     pthread_mutex_unlock(&Mutex);
     pthread_exit(NULL);
@@ -41,7 +41,7 @@ void *validColumn(void *arguments) {
     mark[(data->board)[i][j0]-1]++;
     if (mark[(data->board)[i][j0]-1] == 1) continue;
 
-    pthread_mutex_lock(&Mutex);
+    pthread_mutex_lock(&Mutex); // invalidCount eh um recurso comparilhado
     invalidCount++;
     pthread_mutex_unlock(&Mutex);
     pthread_exit(NULL);    
@@ -60,7 +60,7 @@ void *validSquare(void *arguments) {
       mark[(data->board)[i0+i][j0+j]-1]++;
       if (mark[(data->board)[i0+i][j0+j]-1] == 1) continue;
 
-      pthread_mutex_lock(&Mutex);
+      pthread_mutex_lock(&Mutex); // invalidCount eh um recurso comparilhado
       invalidCount++;
       pthread_mutex_unlock(&Mutex);
       pthread_exit(NULL);
@@ -75,6 +75,7 @@ int main() {
   void *(*func)(void *);       // ponteiro pra funcao que valida cada thread
   
   board = (int **) malloc(9*sizeof(int *));
+  
   for (int i = 0; i < 9; i++) {
     board[i] = (int *) malloc(9*sizeof(int));
     for (int j = 0; j < 9; j++) {
