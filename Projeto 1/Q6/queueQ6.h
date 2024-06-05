@@ -38,7 +38,6 @@ void enqueue(Queue *q, funcPtr func0) { // "append"
 }
 
 funcPtr dequeue(Queue *q) { // remove o primeiro, q->front->Pnext
-    if(q->size == 0) { printf("Cuidado!!! fila vazia\n"); exit(-1); }
     funcPtr it = (q->front)->next->func;
     
     Node *temp = (q->front)->next; // (q->front) eh o header Node
