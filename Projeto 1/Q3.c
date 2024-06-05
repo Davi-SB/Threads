@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define NUM_CLIENTES 3
-#define NUM_OPS 5 //Número de operações por cliente
+#define NUM_CLIENTES 5
+#define NUM_OPS 10 // Numero de operacoes por cliente
 
 typedef struct escolhas{
     int idConta, idCliente;
@@ -58,7 +58,6 @@ void enqueue(Queue *q, Escolha escolha0) { // "append"
 }
 
 Escolha dequeue(Queue *q) { // remove o primeiro, q->front->Pnext
-    if(q->size == 0) { printf("Cuidado!!! fila vazia\n"); exit(-1); }
     Escolha it = (q->front)->next->escolha;
     
     Link *temp = (q->front)->next; // (q->front) eh o header Link
@@ -107,17 +106,17 @@ void *bancoRotina(void* arg) {
 
         switch (pedido.op) {
             case 0: // consulta de saldo
-            printf("Cliente %d - Consulta de Saldo: %d\n", pedido.idCliente, saldoCliente[pedido.idConta]);
+            printf("Cliente %d - Consulta de Saldo: %d\n", pedido.idCliente+1, saldoCliente[pedido.idConta]);
             break;
 
             case 1: // deposito
             saldoCliente[pedido.idConta] += pedido.valorOP;
-            printf("Cliente %d - Deposito de: %d\n", pedido.idCliente, pedido.valorOP);
+            printf("Cliente %d - Deposito de: %d\n", pedido.idCliente+1, pedido.valorOP);
             break;
 
             case 2: // saque
             saldoCliente[pedido.idConta] -= pedido.valorOP;
-            printf("Cliente %d - Saque de: %d\n", pedido.idCliente, pedido.valorOP);
+            printf("Cliente %d - Saque de: %d\n", pedido.idCliente+1, pedido.valorOP);
             break;
         }
     }
@@ -163,7 +162,7 @@ int main(){
 
         rc = pthread_create(&cliente[i], NULL, clienteRotina, (void *)&data[i]);
         if(rc) { printf("error pthread_create: %d\n", rc); exit(-1); }
-        printf("\t\t\t\t\t\tCliente %d usa conta %d\n", data[i].idCliente, data[i].idConta); 
+        printf("\t\t\t\t\t\tCliente %d usa conta %d\n", data[i].idCliente+1, data[i].idConta); 
     }
 
     // espera todos os clientes terminarem de realizar suas operacoes para prosseguir com a execucao 
