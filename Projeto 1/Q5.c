@@ -25,6 +25,7 @@ int main()
   scanf("%d", &NUM_THREADS);
   pthread_t *arrayThreads = (pthread_t *) malloc(NUM_THREADS * (sizeof(pthread_t)));
   int IDS[NUM_THREADS];
+  // alocacao dinamica das barreiras
   pthread_barrier_init(&barrier1, NULL, NUM_THREADS);
   pthread_barrier_init(&barrier2, NULL, NUM_THREADS);
 
@@ -45,6 +46,7 @@ int main()
     printf("x%d: %f\n", i, vetor_variveis[i]);
   }
 
+  // liberacao da memoria alocada dinamicamente
   pthread_barrier_destroy(&barrier1);
   pthread_barrier_destroy(&barrier2);
   pthread_exit(NULL);

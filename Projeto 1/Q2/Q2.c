@@ -8,10 +8,8 @@ int numThread;  // quantidade de threads
 int *array;
 pthread_barrier_t barrier; // Barreira para sincronização
 
-
 void* bubbleSort(void* arg);
 void* merge(void* arg);
-
 
 int main() 
 {
