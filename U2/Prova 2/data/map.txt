@@ -1,0 +1,34 @@
+8 - Memória virtual
+8 - Sistema de arquivos
+7 - Algoritmos de substituição de página
+6 - Sistemas distribuídos
+6 - Tabela de páginas
+5 - Escalonamento
+5 - Sistemas de tempo real crítico
+5 - Sistemas multiprocessadores
+4 - Clássica
+4 - Moldura
+4 - Sistemas de tempo real
+3 - I-node
+3 - Proteção e realocação
+3 - Superbloco
+3 - Tabela de alocação de arquivos (FAT)
+2 - Bloco de boot
+2 - Cliente-Servidor
+2 - Falta de página
+2 - Gerenciamento de espaço
+2 - Journaling
+2 - Página
+2 - Sistemas multicomputadores
+2 - Swap
+1 - Cliente-Servidor 
+1 - DMA
+1 - Diretório
+1 - Earliest deadline first (EDF)
+1 - MBR
+1 - Memory Management Unit (MMU)
+1 - Middleware
+1 - Peer-to-Peer
+1 - PintOS
+1 - Trashing
+1 - timer_sleep() (Alarm Clock)

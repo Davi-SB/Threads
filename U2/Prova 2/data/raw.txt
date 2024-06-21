@@ -1,0 +1,101 @@
+Proteção e realocação
+Journaling
+Sistema de arquivos
+Clássica
+Moldura
+Página
+Algoritmos de substituição de página
+Sistemas de tempo real crítico
+Escalonamento
+PintOS
+timer_sleep() (Alarm Clock)
+Escalonamento
+Sistemas de tempo real
+Sistema de arquivos
+Superbloco
+Gerenciamento de espaço
+Memória virtual
+Tabela de páginas
+Sistemas multiprocessadores
+Sistemas multicomputadores
+Sistemas distribuídos
+Memória virtual
+Falta de página
+MBR
+Bloco de boot
+Superbloco
+Sistemas de tempo real
+Escalonamento
+Earliest deadline first (EDF)
+Sistemas de tempo real crítico
+Proteção e realocação
+Sistema de arquivos
+Diretório
+Memória virtual
+Tabela de páginas
+Algoritmos de substituição de página
+Sistemas distribuídos
+Peer-to-Peer
+Cliente-Servidor
+Sistemas multiprocessadores
+Sistemas de tempo real crítico
+Sistemas de tempo real
+Memória virtual
+Falta de página
+Tabela de alocação de arquivos (FAT)
+I-node
+Sistema de arquivos
+Algoritmos de substituição de página
+Proteção e realocação
+Sistemas multiprocessadores
+Sistema de arquivos
+Bloco de boot
+Superbloco
+Sistemas de tempo real
+Escalonamento
+Memória virtual
+Algoritmos de substituição de página
+Memória virtual
+Swap
+I-node
+Sistema de arquivos
+Cliente-Servidor
+Sistemas distribuídos
+Memory Management Unit (MMU)
+Memória virtual
+Tabela de páginas
+Middleware
+Sistemas multiprocessadores
+DMA
+Sistemas distribuídos
+Clássica
+Tabela de páginas
+Moldura
+Algoritmos de substituição de página
+Swap
+Memória virtual
+Escalonamento
+Sistemas de tempo real crítico
+Tabela de alocação de arquivos (FAT)
+Cliente-Servidor 
+Sistemas distribuídos
+Trashing
+Tabela de alocação de arquivos (FAT)
+I-node
+Sistema de arquivos
+Journaling
+Clássica
+Tabela de páginas
+Moldura
+Algoritmos de substituição de página
+Página
+Gerenciamento de espaço
+Sistema de arquivos
+Sistemas de tempo real crítico
+Sistemas multiprocessadores
+Sistemas multicomputadores
+Sistemas distribuídos
+Clássica
+Tabela de páginas
+Moldura
+Algoritmos de substituição de página

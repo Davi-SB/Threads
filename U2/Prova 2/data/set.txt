@@ -1,0 +1,26 @@
+Algoritmos de substituição de página
+Bloco de boot
+Cliente-Servidor
+Clássica
+DMA
+Escalonamento
+Gerenciamento de espaço
+I-node
+Journaling
+Memory Management Unit (MMU)
+Memória virtual
+Middleware
+Moldura
+Proteção e realocação
+Página
+Sistema de arquivos
+Sistemas de tempo real
+Sistemas de tempo real crítico
+Sistemas distribuídos
+Sistemas multicomputadores
+Sistemas multiprocessadores
+Superbloco
+Swap
+Tabela de alocação de arquivos (FAT)
+Tabela de páginas
+Trashing
