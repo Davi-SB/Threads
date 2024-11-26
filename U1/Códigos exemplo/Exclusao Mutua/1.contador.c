@@ -19,3 +19,4 @@ int main (int argc, char *argv[]){
     printf("Valor final do contador: %ld\n", contador);
     pthread_exit(NULL);
 }
+
